@@ -1,0 +1,7 @@
+.idea
+.env
+
+backend/.env
+backend/firebase
+
+mongodb_server

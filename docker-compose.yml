@@ -1,0 +1,43 @@
+version: '3'
+services:
+  chat-echo-mongodb:
+    container_name: chat-echo-mongodb
+    image: mongo
+    environment:
+      env_file: .env
+    volumes:
+      - chat-engsns-mongodb-data:/data/db
+      - ./mongodb_server/init/:/docker-entrypoint-initdb.d/
+    ports:
+      - "27017:27017"
+    networks:
+      - mongodb-network
+    restart: always
+    tty: true
+
+  chat-echo-web:
+    container_name: chat-echo-api
+    build: ./backend
+    privileged: true
+    command: go run server.go
+    ports:
+      - "80:80"
+    links:
+      - chat-echo-mongodb
+    depends_on:
+      - chat-echo-mongodb
+    volumes:
+      - ./backend:/go/src/EngSns/backend
+    networks:
+      - mongodb-network
+    restart: always
+    tty: true
+
+networks:
+  mongodb-network:
+    driver: bridge
+
+volumes:
+  chat-engsns-mongodb-data:
+    driver: local
+
